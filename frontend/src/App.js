@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import Register from './Register';
+import Register from './Register'; // Импортируем компонент регистрации
 
 function App() {
   const [response, setResponse] = useState(null);
+  const [isRegistered, setIsRegistered] = useState(false); // Состояние для отслеживания регистрации
 
   const handleClick = async () => {
     try {
@@ -12,6 +13,11 @@ function App() {
     } catch (error) {
       console.error('Error making request:', error);
     }
+  };
+
+  // Обработчик успешной регистрации
+  const handleRegistrationSuccess = () => {
+    setIsRegistered(true);
   };
 
   return (
@@ -24,7 +30,9 @@ function App() {
           <pre>{JSON.stringify(response, null, 2)}</pre>
         </div>
       )}
-      <Register />
+      {/* Передаем обработчик регистрации в компонент Register */}
+      <Register onSuccess={handleRegistrationSuccess} />
+      {isRegistered && <p>Registration successful! You can now log in.</p>}
     </div>
   );
 }
