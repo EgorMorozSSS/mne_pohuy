@@ -22,6 +22,7 @@ STATICFILES_DIRS = [
 # Application definition
 
 INSTALLED_APPS = [
+    'users',
     'rest_framework',
     'corsheaders',
     'django.contrib.admin',
