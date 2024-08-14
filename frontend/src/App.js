@@ -1,7 +1,6 @@
-import logo from './logo.svg';
-import './App.css';
 import React, { useState } from 'react';
 import axios from 'axios';
+import Register from './Register';
 
 function App() {
   const [response, setResponse] = useState(null);
@@ -25,6 +24,7 @@ function App() {
           <pre>{JSON.stringify(response, null, 2)}</pre>
         </div>
       )}
+      <Register />
     </div>
   );
 }
