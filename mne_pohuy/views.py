@@ -6,9 +6,13 @@ from django.contrib.auth.hashers import make_password
 from django.core.files.storage import default_storage
 from profiles.models import Profile  # Импорт модели Profile из приложения users
 from profiles.serializers import ProfileSerializer  # Импорт сериализатора
-
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import AllowAny
 
 class RegisterView(APIView):
+    permission_classes = [AllowAny]  # Разрешаем доступ всем
+
     def post(self, request):
         username = request.data.get('username')
         email = request.data.get('email')
@@ -29,15 +33,15 @@ class RegisterView(APIView):
         return Response({"message": "User created successfully"}, status=status.HTTP_201_CREATED)
     
 class ProfileView(APIView):
-    def post(self, request):
+    authentication_classes = [TokenAuthentication]  # Используйте подходящий класс аутентификации
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request):
         user = request.user
-        profile = user.profile
+        profile = Profile.objects.get(user=user)  # Получаем профиль пользователя
 
         serializer = ProfileSerializer(profile, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response({"message": "Profile updated successfully"}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def put(self, request):
-        return self.post(request)  # Просто перенаправляем запрос в обработку POST
