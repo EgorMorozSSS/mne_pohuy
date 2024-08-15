@@ -1,10 +1,24 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import Register from './Register'; // Импортируем компонент регистрации
+import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
+import Register from './Register'; 
+import Profile from './Profile';
 
 function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/profile" element={<Profile />} />
+      </Routes>
+    </Router>
+  );
+}
+
+function Home() {
+  const navigate = useNavigate();
   const [response, setResponse] = useState(null);
-  const [isRegistered, setIsRegistered] = useState(false); // Состояние для отслеживания регистрации
 
   const handleClick = async () => {
     try {
@@ -15,9 +29,8 @@ function App() {
     }
   };
 
-  // Обработчик успешной регистрации
   const handleRegistrationSuccess = () => {
-    setIsRegistered(true);
+    navigate('/profile');  // Перенаправление на страницу профиля после успешной регистрации
   };
 
   return (
@@ -30,9 +43,7 @@ function App() {
           <pre>{JSON.stringify(response, null, 2)}</pre>
         </div>
       )}
-      {/* Передаем обработчик регистрации в компонент Register */}
       <Register onSuccess={handleRegistrationSuccess} />
-      {isRegistered && <p>Registration successful! You can now log in.</p>}
     </div>
   );
 }
