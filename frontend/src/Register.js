@@ -1,28 +1,39 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-function Register({ onSuccess }) { // Принимаем onSuccess как пропс
+function Register({ onSuccess }) {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-       
+
     try {
-      await axios.post('http://127.0.0.1:8000/register/', {
-        username,
-        email,
-        password,
-      });
-      // Вызовем onSuccess после успешной регистрации
-      if (onSuccess) onSuccess();
+        const response = await axios.post('http://127.0.0.1:8000/register/', {
+            username,
+            email,
+            password,
+        });
+
+        if (response.status === 201) {
+            localStorage.setItem('token', response.data.token);
+            navigate('/profile/');
+            if (onSuccess) onSuccess();
+        }
     } catch (err) {
-      setError('Something went wrong');
-      console.error(err);
+        if (err.response && err.response.data) {
+            setError(err.response.data.error || 'Something went wrong');
+        } else {
+            setError('Something went wrong');
+        }
+        console.error(err);
     }
-  };
+};
+
 
   return (
     <div>
