@@ -9,7 +9,7 @@ function UserProfile() {
     // Fetch the user profile when the component mounts
     const fetchProfile = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/profile/', {
+        const response = await axios.get('http://127.0.0.1:8000/profile/', {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
           },
@@ -29,14 +29,14 @@ function UserProfile() {
     formData.append('avatar', event.target.files[0]);
 
     try {
-      await axios.patch('http://127.0.0.1:8000/api/profile/', formData, {
+      await axios.patch('http://127.0.0.1:8000/profile/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
       });
       // Update the profile after uploading the avatar
-      const response = await axios.get('http://127.0.0.1:8000/api/profile/', {
+      const response = await axios.get('http://127.0.0.1:8000/profile/', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
