@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './NewsList.scss'; // Import the SCSS file
 
 const NewsList = () => {
     const [news, setNews] = useState([]);
@@ -57,14 +58,14 @@ const NewsList = () => {
     };
 
     return (
-        <div>
+        <div className="news-list-container">
             <h1>News List</h1>
-            <ul>
+            <ul className="news-list">
                 {news.map(item => (
-                    <li key={item.id}>
+                    <li key={item.id} className="news-item">
                         <h2>{item.title}</h2>
                         <p>{item.content}</p>
-                        <p><em>{new Date(item.created_at).toLocaleString()}</em></p>
+                        <p className="date"><em>{new Date(item.created_at).toLocaleString()}</em></p>
                         <button onClick={() => startEdit(item)}>Edit</button>
                         <button onClick={() => deleteNews(item.id)}>Delete</button>
                     </li>
@@ -72,7 +73,7 @@ const NewsList = () => {
             </ul>
 
             {editMode && (
-                <div>
+                <div className="edit-form">
                     <h2>Edit News</h2>
                     <form onSubmit={handleSubmit}>
                         <div>
@@ -95,7 +96,7 @@ const NewsList = () => {
                             />
                         </div>
                         <button type="submit">Update</button>
-                        <button type="button" onClick={() => setEditMode(null)}>Cancel</button>
+                        <button type="button" className="cancel-button" onClick={() => setEditMode(null)}>Cancel</button>
                     </form>
                 </div>
             )}
