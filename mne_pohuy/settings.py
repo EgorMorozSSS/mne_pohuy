@@ -24,6 +24,7 @@ STATICFILES_DIRS = [
 # Application definition
 
 INSTALLED_APPS = [
+    'drf_yasg',
     'News',
     'profiles',
     'rest_framework',

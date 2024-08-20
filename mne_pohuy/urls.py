@@ -29,7 +29,6 @@ urlpatterns = [
     path('profile/', include('profiles.urls')),
     path('news/', include('News.urls')),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-
 ]
 
 if settings.DEBUG:
