@@ -3,6 +3,8 @@ import axios from 'axios';
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import Register from './Register'; 
 import Profile from './Profile';
+import NewsForm from './NewsForm';
+import NewsList from './NewsList';
 
 function App() {
   return (
@@ -11,6 +13,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/news/create" element={<NewsForm />} />
+        <Route path="/news" element={<NewsList />} />
       </Routes>
     </Router>
   );
