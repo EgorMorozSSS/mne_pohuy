@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import NewsCreateView, NewsListView, NewsListCreateView, NewsRetrieveUpdateDestroyView
+from .views import NewsCreateView, NewsListView
 
 urlpatterns = [
     path('create/', NewsCreateView.as_view(), name='news-create'),
