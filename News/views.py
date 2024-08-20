@@ -1,24 +1,22 @@
 from rest_framework import generics
 from .models import News
-from .serializers import NewsSerializer
+from .serializers import Serializer
 
 class NewsCreateView(generics.CreateAPIView):
     queryset = News.objects.all()
-    serializer_class = NewsSerializer
+    serializer_class = Serializer
 
     def create(self, request, *args, **kwargs):
-        print(request.data)  # Добавьте это для отладки входящих данных
         return super().create(request, *args, **kwargs)
 
-# Новое представление для отображения списка новостей
 class NewsListView(generics.ListAPIView):
     queryset = News.objects.all()
-    serializer_class = NewsSerializer
+    serializer_class = Serializer
 
-class NewsListCreateView(generics.ListCreateAPIView):
+class NewsUpdateView(generics.RetrieveUpdateAPIView):
     queryset = News.objects.all()
-    serializer_class = NewsSerializer
+    serializer_class = Serializer
 
-class NewsRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+class NewsDeleteView(generics.DestroyAPIView):
     queryset = News.objects.all()
-    serializer_class = NewsSerializer
+    serializer_class = Serializer
