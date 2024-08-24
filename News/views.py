@@ -30,6 +30,37 @@ class NewsUpdateView(generics.RetrieveUpdateAPIView):
     queryset = News.objects.all()
     serializer_class = Serializer
 
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        response = super().update(request, *args, **kwargs)
+        cache_key = f'news_{instance.id}'
+        cache.delete(cache_key)
+        list_cache_key = 'news_list'
+        cache.delete(list_cache_key)
+        return response
+
+    def get(self, request, *args, **kwargs):
+        instance = self.get_object()
+        cache_key = f'news_{instance.id}'
+        cached_news = cache.get(cache_key)
+        if cached_news is not None:
+            return Response(cached_news)
+        response = super().get(request, *args, **kwargs)
+        cache.set(cache_key, response.data, timeout=60*15)
+        return response
+
 class NewsDeleteView(generics.DestroyAPIView):
     queryset = News.objects.all()
-    serializer_class = Serializer   
+    serializer_class = Serializer
+
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        response = super().delete(request, *args, **kwargs)
+
+        cache_key = f'news_{instance.id}'
+        cache.delete(cache_key)
+
+        list_cache_key = 'news_list'
+        cache.delete(list_cache_key)
+
+        return response   
