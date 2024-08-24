@@ -131,3 +131,6 @@ CACHES = {
 CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
+SESSION_COOKIE_AGE = 1209600  # Время жизни сессии в секундах (2 недели)
+SESSION_COOKIE_SECURE = True  # Устанавливать Cookies только по HTTPS
+SESSION_COOKIE_HTTPONLY = True  # Запретить доступ к Cookies через JavaScript
