@@ -9,7 +9,9 @@ class NewsCreateView(generics.CreateAPIView):
     serializer_class = Serializer
 
     def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+        response = super().create(request, *args, **kwargs)
+        cache.clear()
+        return response
 
 class NewsListView(generics.ListAPIView):
     queryset = News.objects.all()
