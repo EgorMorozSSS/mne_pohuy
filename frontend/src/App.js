@@ -5,6 +5,7 @@ import Register from './Register';
 import Profile from './Profile';
 import NewsForm from './NewsForm';
 import NewsList from './NewsList';
+import CookieConsent from './CookieConsent';
 
 function App() {
   return (
@@ -16,6 +17,9 @@ function App() {
         <Route path="/news/create" element={<NewsForm />} />
         <Route path="/news" element={<NewsList />} />
       </Routes>
+
+      {/* Добавляем компонент уведомления о Cookies */}
+      <CookieConsent />
     </Router>
   );
 }
