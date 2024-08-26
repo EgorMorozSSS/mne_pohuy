@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
+
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';  // Добавляем импорт Link
 import Register from './Register'; 
 import Profile from './Profile';
 import NewsForm from './NewsForm';
 import NewsList from './NewsList';
 import CookieConsent from './CookieConsent';
+import './Home.scss';  // Подключаем файл стилей
 
 function App() {
   return (
@@ -18,40 +18,28 @@ function App() {
         <Route path="/news" element={<NewsList />} />
       </Routes>
 
-      {/* Добавляем компонент уведомления о Cookies */}
+      {/* Компонент уведомления о Cookies */}
       <CookieConsent />
     </Router>
   );
 }
 
 function Home() {
-  const navigate = useNavigate();
-  const [response, setResponse] = useState(null);
-
-  const handleClick = async () => {
-    try {
-      const result = await axios.get('http://127.0.0.1:8000/api/');
-      setResponse(result.data);
-    } catch (error) {
-      console.error('Error making request:', error);
-    }
-  };
-
-  const handleRegistrationSuccess = () => {
-    navigate('/profile');  // Перенаправление на страницу профиля после успешной регистрации
-  };
-
   return (
-    <div className="App">
-      <h1>Hello, React!</h1>
-      <button onClick={handleClick}>Send Request</button>
-      {response && (
-        <div>
-          <h2>Response from Backend:</h2>
-          <pre>{JSON.stringify(response, null, 2)}</pre>
-        </div>
-      )}
-      <Register onSuccess={handleRegistrationSuccess} />
+    <div className="home-container">
+      <nav className="navigation">
+        <ul>
+          <li><Link to="/register">Register</Link></li>
+          <li><Link to="/profile">Profile</Link></li>
+          <li><Link to="/news/create">Create News</Link></li>
+          <li><Link to="/news">News List</Link></li>
+        </ul>
+      </nav>
+
+      <div className="content">
+        <h1>Welcome to the News Portal</h1>
+        <p>Explore the latest news or create your own articles!</p>
+      </div>
     </div>
   );
 }

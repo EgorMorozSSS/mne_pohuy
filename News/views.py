@@ -3,6 +3,10 @@ from .models import News
 from .serializers import Serializer
 from django.core.cache import cache
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
+
+class NewsListPagination(PageNumberPagination):
+    page_size = 10  # Количество новостей на одной странице
 
 class NewsCreateView(generics.CreateAPIView):
     queryset = News.objects.all()
@@ -16,13 +20,14 @@ class NewsCreateView(generics.CreateAPIView):
 class NewsListView(generics.ListAPIView):
     queryset = News.objects.all()
     serializer_class = Serializer
+    pagination_class = NewsListPagination
 
     def list(self, request, *args, **kwargs):
-        cache_key = 'news_list'
+        cache_key = f'news_list_{request.query_params.get("page", 1)}'  # Ключ для кеша с учетом страницы
         news = cache.get(cache_key)
         if not news:
             response = super().list(request, *args, **kwargs)
-            cache.set(cache_key, response.data, timeout=60*15)  # Кеш на 15 минут
+            cache.set(cache_key, response.data, timeout=60*15)
             return response
         return Response(news)
 
