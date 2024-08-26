@@ -1,6 +1,6 @@
 // NewsForm.js
-
 import React, { useState } from 'react';
+import Header from './Header';
 
 const NewsForm = () => {
     const [title, setTitle] = useState('');
@@ -29,6 +29,8 @@ const NewsForm = () => {
 
     return (
         <form onSubmit={handleSubmit}>
+            <Header />
+            <form onSubmit={handleSubmit}></form>
             <div>
                 <label>Title:</label>
                 <input

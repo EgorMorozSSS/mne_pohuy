@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './NewsList.scss';
+import Header from './Header';  // Импортируем компонент шапки
 
 const NewsList = () => {
     const [news, setNews] = useState([]);
@@ -69,61 +70,64 @@ const NewsList = () => {
     };
 
     return (
-        <div className="news-list-container">
-            <h1>News List</h1>
-            <ul className="news-list">
-                {news.map(item => (
-                    <li key={item.id} className="news-item">
-                        <h2>{item.title}</h2>
-                        <p>{item.content}</p>
-                        <p className="date"><em>{new Date(item.created_at).toLocaleString()}</em></p>
-                        <button onClick={() => startEdit(item)}>Edit</button>
-                        <button onClick={() => deleteNews(item.id)}>Delete</button>
-                    </li>
-                ))}
-            </ul>
+        <>
+            <Header /> {/* Добавляем шапку */}
+            <div className="news-list-container">
+                <h1>News List</h1>
+                <ul className="news-list">
+                    {news.map(item => (
+                        <li key={item.id} className="news-item">
+                            <h2>{item.title}</h2>
+                            <p>{item.content}</p>
+                            <p className="date"><em>{new Date(item.created_at).toLocaleString()}</em></p>
+                            <button onClick={() => startEdit(item)}>Edit</button>
+                            <button onClick={() => deleteNews(item.id)}>Delete</button>
+                        </li>
+                    ))}
+                </ul>
 
-            {/* Пагинация */}
-            <div className="pagination">
-                <button onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1}>
-                    Previous
-                </button>
-                <span>Page {currentPage} of {totalPages}</span>
-                <button onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages}>
-                    Next
-                </button>
-            </div>
-
-            {/* Форма редактирования */}
-            {editMode && (
-                <div className="edit-form">
-                    <h2>Edit News</h2>
-                    <form onSubmit={handleSubmit}>
-                        <div>
-                            <label>Title:</label>
-                            <input
-                                type="text"
-                                name="title"
-                                value={formData.title}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                        <div>
-                            <label>Content:</label>
-                            <textarea
-                                name="content"
-                                value={formData.content}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                        <button type="submit">Update</button>
-                        <button type="button" className="cancel-button" onClick={() => setEditMode(null)}>Cancel</button>
-                    </form>
+                {/* Пагинация */}
+                <div className="pagination">
+                    <button onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1}>
+                        Previous
+                    </button>
+                    <span>Page {currentPage} of {totalPages}</span>
+                    <button onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages}>
+                        Next
+                    </button>
                 </div>
-            )}
-        </div>
+
+                {/* Форма редактирования */}
+                {editMode && (
+                    <div className="edit-form">
+                        <h2>Edit News</h2>
+                        <form onSubmit={handleSubmit}>
+                            <div>
+                                <label>Title:</label>
+                                <input
+                                    type="text"
+                                    name="title"
+                                    value={formData.title}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label>Content:</label>
+                                <textarea
+                                    name="content"
+                                    value={formData.content}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+                            <button type="submit">Update</button>
+                            <button type="button" className="cancel-button" onClick={() => setEditMode(null)}>Cancel</button>
+                        </form>
+                    </div>
+                )}
+            </div>
+        </>
     );
 };
 

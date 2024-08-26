@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Header from './Header';  // Импортируем компонент шапки
 
 function Profile() {
   const [username, setUsername] = useState('');
@@ -13,7 +14,7 @@ function Profile() {
       try {
         const response = await axios.get('http://127.0.0.1:8000/profile/', {
           headers: {
-            'Authorization': `Token ${token}`,  // Обратите внимание на использование ``
+            'Authorization': `Token ${token}`,  // Использование токена в заголовке
           },
         });
         setUsername(response.data.username);
@@ -23,22 +24,24 @@ function Profile() {
         console.error(err);
       }
     };
-    
 
     fetchProfile();
   }, [token]);
 
   return (
-    <div>
-      <h2>Profile</h2>
-      {error && <p>{error}</p>}
+    <>
+      <Header />  {/* Добавляем шапку */}
       <div>
-        <strong>Username:</strong> {username}
+        <h2>Profile</h2>
+        {error && <p>{error}</p>}
+        <div>
+          <strong>Username:</strong> {username}
+        </div>
+        <div>
+          <strong>Email:</strong> {email}
+        </div>
       </div>
-      <div>
-        <strong>Email:</strong> {email}
-      </div>
-    </div>
+    </>
   );
 }
 

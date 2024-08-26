@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Header from './Header';  // Импортируем компонент шапки
 
 function Register({ onSuccess }) {
   const [username, setUsername] = useState('');
@@ -32,44 +33,46 @@ function Register({ onSuccess }) {
         }
         console.error(err);
     }
-};
-
+  };
 
   return (
-    <div>
-      <h2>Register</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Username:</label>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Email:</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit">Register</button>
-        {error && <p>{error}</p>}
-      </form>
-    </div>
+    <>
+      <Header />  {/* Добавляем шапку */}
+      <div>
+        <h2>Register</h2>
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label>Username:</label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label>Email:</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label>Password:</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <button type="submit">Register</button>
+          {error && <p>{error}</p>}
+        </form>
+      </div>
+    </>
   );
 }
 
