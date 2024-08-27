@@ -6,12 +6,14 @@ import NewsForm from './NewsForm';
 import NewsList from './NewsList';
 import CookieConsent from './CookieConsent';
 import './Home.scss';  // Подключаем файл стилей
+import Test from './Test';
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/test" element={<Test />} />
         <Route path="/register" element={<Register />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/news/create" element={<NewsForm />} />
