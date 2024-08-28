@@ -69,10 +69,31 @@ const NewsList = () => {
         }
     };
 
+    // Добавляем функцию для скачивания файла
+    const handleDownload = () => {
+        fetch('http://127.0.0.1:5000/download') // URL Flask сервера
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(new Blob([blob]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'hello.txt');
+                document.body.appendChild(link);
+                link.click();
+                link.parentNode.removeChild(link);
+            })
+            .catch(error => console.error('Ошибка при загрузке файла:', error));
+    };
+
     return (
         <>
             <Header /> {/* Добавляем шапку */}
             <div className="news-list-container">
+                <div className="actions-container">
+                    <button onClick={handleDownload} className="download-button">
+                        Скачать файл
+                    </button>
+                </div>
                 <h1>News List</h1>
                 <ul className="news-list">
                     {news.map(item => (
