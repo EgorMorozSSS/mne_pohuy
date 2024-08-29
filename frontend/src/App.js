@@ -7,6 +7,7 @@ import NewsList from './NewsList';
 import CookieConsent from './CookieConsent';
 import './Home.scss';  // Подключаем файл стилей
 import Test from './Test';
+import SortedNews from './SortedNews';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/news/create" element={<NewsForm />} />
         <Route path="/news" element={<NewsList />} />
+        <Route path="/sort" element={<SortedNews />} />
       </Routes>
 
       {/* Компонент уведомления о Cookies */}
