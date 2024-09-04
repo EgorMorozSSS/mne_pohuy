@@ -1,6 +1,7 @@
+# views.py
 from rest_framework import generics
-from .models import News
-from .serializers import Serializer
+from .models import News, Comment
+from .serializers import Serializer, CommentSerializer
 from django.core.cache import cache
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
@@ -69,3 +70,15 @@ class NewsDeleteView(generics.DestroyAPIView):
         cache.delete(list_cache_key)
 
         return response   
+
+# views.py
+class CommentListCreateView(generics.ListCreateAPIView):
+    serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        news_id = self.kwargs['news_id']
+        return Comment.objects.filter(news_id=news_id)
+
+    def perform_create(self, serializer):
+        news_id = self.kwargs['news_id']
+        serializer.save(news_id=news_id)

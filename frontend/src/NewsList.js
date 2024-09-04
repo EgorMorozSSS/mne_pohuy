@@ -1,152 +1,146 @@
 import React, { useState, useEffect } from 'react';
 import './NewsList.scss';
-import Header from './Header';  // Импортируем компонент шапки
+import Header from './Header';
 
 const NewsList = () => {
     const [news, setNews] = useState([]);
-    const [editMode, setEditMode] = useState(null); // Режим редактирования
-    const [formData, setFormData] = useState({ title: '', content: '' }); // Данные формы
-    const [currentPage, setCurrentPage] = useState(1); // Текущая страница
-    const [totalPages, setTotalPages] = useState(1); // Общее количество страниц
+    const [comments, setComments] = useState({}); // Комментарии по каждой новости
+    const [newComment, setNewComment] = useState(''); // Новый комментарий
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [showComments, setShowComments] = useState({}); // Состояние для показа комментариев
 
     useEffect(() => {
-        fetch(`http://localhost:8000/news/?page=${currentPage}`)
-            .then(response => response.json())
-            .then(data => {
-                setNews(data.results); // Используем data.results для PageNumberPagination
-                setTotalPages(Math.ceil(data.count / 10)); // Общее количество страниц
-            })
-            .catch(error => console.error('Error fetching news:', error));
+        fetchNews();
     }, [currentPage]);
 
-    const deleteNews = (id) => {
-        fetch(`http://localhost:8000/news/${id}/delete/`, {
-            method: 'DELETE',
-        })
-        .then(response => {
-            if (response.ok) {
-                setNews(prevNews => prevNews.filter(item => item.id !== id));
-            } else {
-                console.error('Error deleting news');
-            }
-        })
-        .catch(error => console.error('Error deleting news:', error));
-    };
-
-    const startEdit = (item) => {
-        setEditMode(item.id);
-        setFormData({ title: item.title, content: item.content });
-    };
-
-    const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        fetch(`http://localhost:8000/news/${editMode}/update/`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData),
-        })
-        .then(response => response.json())
-        .then(data => {
-            setNews(prevNews => prevNews.map(item => item.id === data.id ? data : item));
-            setEditMode(null);
-            setFormData({ title: '', content: '' });
-        })
-        .catch(error => console.error('Error updating news:', error));
-    };
-
-    const goToPage = (page) => {
-        if (page >= 1 && page <= totalPages) {
-            setCurrentPage(page);
+    const fetchNews = async () => {
+        try {
+            const response = await fetch(`http://localhost:8000/news/?page=${currentPage}`);
+            const data = await response.json();
+            setNews(data.results);
+            setTotalPages(Math.ceil(data.count / 10));
+        } catch (error) {
+            console.error('Error fetching news:', error);
         }
     };
 
-    // Добавляем функцию для скачивания файла
-    const handleDownload = () => {
-        fetch('http://127.0.0.1:5000/download') // URL Flask сервера
-            .then(response => response.blob())
-            .then(blob => {
-                const url = window.URL.createObjectURL(new Blob([blob]));
-                const link = document.createElement('a');
-                link.href = url;
-                link.setAttribute('download', 'hello.txt');
-                document.body.appendChild(link);
-                link.click();
-                link.parentNode.removeChild(link);
-            })
-            .catch(error => console.error('Ошибка при загрузке файла:', error));
+    const fetchComments = async (newsId) => {
+        try {
+            const response = await fetch(`http://localhost:8000/news/${newsId}/comments/`);
+            const data = await response.json();
+            if (Array.isArray(data) && data.every(comment => typeof comment === 'object' && 'id' in comment && 'content' in comment && 'created_at' in comment)) {
+                setComments(prevComments => ({
+                    ...prevComments,
+                    [newsId]: data
+                }));
+            } else {
+                console.error('Expected an array of comment objects with id, content, and created_at, but got:', data);
+                throw new Error('Unexpected data format');
+            }
+        } catch (error) {
+            console.error('Error fetching comments:', error);
+        }
     };
 
+    const toggleComments = async (newsId) => {
+        if (!showComments[newsId]) {
+            if (!comments[newsId]) {
+                await fetchComments(newsId);
+            }
+        }
+        setShowComments(prevState => ({
+            ...prevState,
+            [newsId]: !prevState[newsId]
+        }));
+    };
+
+    const addComment = async (newsId) => {
+        if (newComment.trim() === '') {
+            console.error('Comment content cannot be empty');
+            return;
+        }
+    
+        try {
+            const response = await fetch(`http://localhost:8000/news/${newsId}/comments/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ content: newComment.trim() }),
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Server error:', errorData);
+                throw new Error(errorData.detail || 'Error adding comment');
+            }
+            const data = await response.json();
+            setComments(prevComments => ({
+                ...prevComments,
+                [newsId]: [
+                    ...(prevComments[newsId] || []), 
+                    data
+                ]
+            }));
+            setNewComment(''); // Очистить поле ввода
+        } catch (error) {
+            console.error('Error adding comment:', error);
+        }
+    };
+    
     return (
         <>
-            <Header /> {/* Добавляем шапку */}
+            <Header />
             <div className="news-list-container">
-                <div className="actions-container">
-                    <button onClick={handleDownload} className="download-button">
-                        Скачать файл
-                    </button>
-                </div>
                 <h1>News List</h1>
                 <ul className="news-list">
                     {news.map(item => (
                         <li key={item.id} className="news-item">
                             <h2>{item.title}</h2>
                             <p>{item.content}</p>
-                            <p className="date"><em>{new Date(item.created_at).toLocaleString()}</em></p>
-                            <button onClick={() => startEdit(item)}>Edit</button>
-                            <button onClick={() => deleteNews(item.id)}>Delete</button>
+                            <p className="date">
+                                <em>{new Date(item.created_at).toLocaleString()}</em>
+                            </p>
+                            <button onClick={() => toggleComments(item.id)}>
+                                {showComments[item.id] ? 'Hide Comments' : 'Show Comments'}
+                            </button>
+    
+                            {showComments[item.id] && (
+                                <div className="comments-section">
+                                    <ul>
+                                        {comments[item.id] && comments[item.id].length > 0 ? comments[item.id].map(comment => (
+                                            <li key={comment.id}>
+                                                <p>{comment.content}</p>
+                                                <p className="date">
+                                                    <em>{new Date(comment.created_at).toLocaleString()}</em>
+                                                </p>
+                                            </li>
+                                        )) : <li>No comments yet.</li>}
+                                    </ul>
+    
+                                    <div className="add-comment">
+                                        <textarea
+                                            value={newComment}
+                                            onChange={(e) => setNewComment(e.target.value)}
+                                            placeholder="Add a comment"
+                                        />
+                                        <button onClick={() => addComment(item.id)}>Add Comment</button>
+                                    </div>
+                                </div>
+                            )}
                         </li>
                     ))}
                 </ul>
-
-                {/* Пагинация */}
+    
                 <div className="pagination">
-                    <button onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1}>
+                    <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
                         Previous
                     </button>
                     <span>Page {currentPage} of {totalPages}</span>
-                    <button onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages}>
+                    <button onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}>
                         Next
                     </button>
                 </div>
-
-                {/* Форма редактирования */}
-                {editMode && (
-                    <div className="edit-form">
-                        <h2>Edit News</h2>
-                        <form onSubmit={handleSubmit}>
-                            <div>
-                                <label>Title:</label>
-                                <input
-                                    type="text"
-                                    name="title"
-                                    value={formData.title}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <label>Content:</label>
-                                <textarea
-                                    name="content"
-                                    value={formData.content}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </div>
-                            <button type="submit">Update</button>
-                            <button type="button" className="cancel-button" onClick={() => setEditMode(null)}>Cancel</button>
-                        </form>
-                    </div>
-                )}
             </div>
         </>
     );
